@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>⚽ Figuritas Mundial 2026</title>
+<style>
+  :root {
+    --bg: #0a0a1a;
+    --surface: #12122a;
+    --surface2: #1a1a35;
+    --accent: #c9a227;
+    --accent2: #e8c547;
+    --green: #22c55e;
+    --red: #ef4444;
+    --text: #f0f0f0;
+    --text2: #a0a0b8;
+    --border: #2a2a4a;
+    --special: #7c3aed;
+    --special2: #a855f7;
+    --radius: 10px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a30 50%, #0a1a0a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .logo-title {
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-size: 0.62rem;
+    color: var(--text2);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent2);
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* FILTERS */
+  .filters {
+    padding: 10px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent2);
+    color: #000;
+  }
+  .filter-btn.special-btn.active {
+    background: var(--special);
+    border-color: var(--special2);
+    color: #fff;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    padding: 8px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text2); }
+
+  /* MAIN CONTENT */
+  main {
+    padding: 10px 10px 80px;
+  }
+
+  /* TEAM SECTION */
+  .team-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .team-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    gap: 10px;
+    user-select: none;
+  }
+
+  .team-flag {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .team-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .team-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  .team-code {
+    font-size: 0.65rem;
+    color: var(--text2);
+    letter-spacing: 1px;
+  }
+
+  .team-mini-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .team-count {
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 36px;
+    text-align: right;
+  }
+  .team-count.done { color: var(--green); }
+  .team-count.partial { color: var(--accent2); }
+  .team-count.none { color: var(--text2); }
+
+  .team-mini-bar {
+    width: 40px;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .team-mini-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  .team-chevron {
+    font-size: 0.8rem;
+    color: var(--text2);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .team-section.open .team-chevron { transform: rotate(180deg); }
+
+  /* STICKERS GRID */
+  .stickers-grid {
+    display: none;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    padding: 6px 8px 10px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .team-section.open .stickers-grid { display: grid; }
+
+  /* Special stickers — same compact grid */
+  .stickers-grid.special-grid {
+    grid-template-columns: repeat(9, 1fr);
+  }
+
+  .sticker-btn {
+    aspect-ratio: 1;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text2);
+    font-size: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    padding: 1px;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sticker-btn:active { transform: scale(0.9); }
+
+  .sticker-btn.collected {
+    background: var(--green);
+    border-color: #16a34a;
+    color: #000;
+  }
+
+  .sticker-btn.collected::after {
+    content: '✓';
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    font-size: 0.55rem;
+    color: rgba(0,0,0,0.6);
+  }
+
+  .sticker-btn.special-sticker {
+    border-color: var(--special);
+  }
+
+  .sticker-btn.special-sticker.collected {
+    background: var(--special);
+    border-color: var(--special2);
+    color: #fff;
+  }
+
+  /* QUICK ACTIONS inside team */
+  .team-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 10px 10px;
+    background: var(--surface2);
+  }
+
+  .quick-btn {
+    flex: 1;
+    padding: 6px 4px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+
+  .quick-btn.mark-all {
+    background: rgba(34,197,94,0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .quick-btn.unmark-all {
+    background: rgba(239,68,68,0.1);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  /* BOTTOM FAB */
+  .fab {
+    position: fixed;
+    bottom: 20px;
+    right: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(201,162,39,0.5);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+  }
+  .fab:active { transform: scale(0.9); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 { font-size: 1rem; margin-bottom: 14px; color: var(--accent2); }
+
+  .modal-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .modal-stat:last-child { border: none; }
+  .modal-stat strong { color: var(--accent2); font-size: 1rem; }
+
+  .modal-close {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* SPECIAL BADGE */
+  .special-badge {
+    background: var(--special);
+    color: #fff;
+    font-size: 0.55rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text2);
+    font-size: 0.9rem;
+  }
+
+  /* Completion ring */
+  .team-section.complete { border-color: rgba(34,197,94,0.4); }
+  .team-section.complete .team-header { background: rgba(34,197,94,0.05); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: var(--surface);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 300;
+    opacity: 0;
+    transition: all 0.3s;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="ballGrad" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#c8d8c0"/>
+          </radialGradient>
+          <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c9a227" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#c9a227" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- glow ring -->
+        <circle cx="50" cy="54" r="38" fill="url(#glowGrad)"/>
+        <!-- ball shadow -->
+        <ellipse cx="50" cy="88" rx="22" ry="5" fill="#000" opacity="0.3"/>
+        <!-- ball body -->
+        <circle cx="50" cy="50" r="36" fill="url(#ballGrad)" filter="url(#glow)"/>
+        <!-- classic soccer pentagon patches -->
+        <!-- center pentagon -->
+        <polygon points="50,30 62,39 57,53 43,53 38,39" fill="#1a1a2e" opacity="0.85"/>
+        <!-- top-left patch -->
+        <polygon points="22,34 34,26 38,39 28,46 18,42" fill="#1a1a2e" opacity="0.85"/>
+        <!-- top-right patch -->
+        <polygon points="78,34 66,26 62,39 72,46 82,42" fill="#1a1a2e" opacity="0.85"/>
+        <!-- bottom-left patch -->
+        <polygon points="30,68 38,53 43,53 40,67 30,72" fill="#1a1a2e" opacity="0.85"/>
+        <!-- bottom-right patch -->
+        <polygon points="70,68 62,53 57,53 60,67 70,72" fill="#1a1a2e" opacity="0.85"/>
+        <!-- bottom patch -->
+        <polygon points="50,76 40,67 43,53 57,53 60,67" fill="#1a1a2e" opacity="0.85"/>
+        <!-- shine -->
+        <ellipse cx="40" cy="36" rx="9" ry="6" fill="white" opacity="0.35" transform="rotate(-20 40 36)"/>
+        <!-- trophy star top -->
+        <text x="50" y="19" text-anchor="middle" font-size="13" fill="#c9a227" filter="url(#glow)">★</text>
+      </svg>
+      <div class="logo-text">
+        <span class="logo-title">Figuritas 2026</span>
+        <span class="logo-sub">FIFA World Cup™ · Panini</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="fab" style="position:static;width:34px;height:34px;font-size:0.85rem;box-shadow:none;" onclick="exportBackup()" title="Exportar backup">💾</button>
+      <label class="fab" style="position:static;width:34px;height:34px;font-size:0.85rem;box-shadow:none;cursor:pointer;" title="Importar backup">
+        📂<input type="file" accept=".json" onchange="importBackup(event)" style="display:none">
+      </label>
+      <button class="fab" style="position:static;width:34px;height:34px;font-size:0.85rem;box-shadow:none;" onclick="openStats()" title="Estadísticas">📊</button>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-count" id="progressCount">0 / 969</div>
+  </div>
+</header>
+
+<div class="filters" id="filterBar">
+  <button class="filter-btn active" onclick="setFilter('all',this)">🌍 Todos</button>
+  <button class="filter-btn special-btn" onclick="setFilter('special',this)">⭐ Especiales</button>
+  <button class="filter-btn" onclick="setFilter('missing',this)">❌ Faltan</button>
+  <button class="filter-btn" onclick="setFilter('complete',this)">✅ Completos</button>
+  <!-- country buttons injected by JS -->
+</div>
+
+<div class="search-wrap">
+  <input type="text" class="search-input" id="searchInput" placeholder="🔍  Buscar equipo o figurita (ej: MEX5, Brasil...)" oninput="onSearch()" autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<main id="main"></main>
+
+<!-- Stats Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeStats(event)">
+  <div class="modal" id="statsModal">
+    <h2>📊 Tu álbum en números</h2>
+    <div id="statsContent"></div>
+    <button class="modal-close" onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const TEAMS = [
+  { code: 'FWC', name: 'Especiales FIFA / FWC', flag: '🏆', special: true,
+    stickers: ['00','FWC1','FWC2','FWC3','FWC4','FWC5','FWC6','FWC7','FWC8'] },
+  { code: 'MEX', name: 'México', flag: '🇲🇽' },
+  { code: 'RSA', name: 'Sudáfrica', flag: '🇿🇦' },
+  { code: 'KOR', name: 'Corea del Sur', flag: '🇰🇷' },
+  { code: 'CZE', name: 'Rep. Checa', flag: '🇨🇿' },
+  { code: 'CAN', name: 'Canadá', flag: '🇨🇦' },
+  { code: 'BIH', name: 'Bosnia-Herz.', flag: '🇧🇦' },
+  { code: 'QAT', name: 'Qatar', flag: '🇶🇦' },
+  { code: 'SUI', name: 'Suiza', flag: '🇨🇭' },
+  { code: 'BRA', name: 'Brasil', flag: '🇧🇷' },
+  { code: 'MAR', name: 'Marruecos', flag: '🇲🇦' },
+  { code: 'HAI', name: 'Haití', flag: '🇭🇹' },
+  { code: 'SCO', name: 'Escocia', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { code: 'USA', name: 'Estados Unidos', flag: '🇺🇸' },
+  { code: 'PAR', name: 'Paraguay', flag: '🇵🇾' },
+  { code: 'AUS', name: 'Australia', flag: '🇦🇺' },
+  { code: 'TUR', name: 'Turquía', flag: '🇹🇷' },
+  { code: 'GER', name: 'Alemania', flag: '🇩🇪' },
+  { code: 'CUW', name: 'Curazao', flag: '🇨🇼' },
+  { code: 'CIV', name: 'C. de Marfil', flag: '🇨🇮' },
+  { code: 'ECU', name: 'Ecuador', flag: '🇪🇨' },
+  { code: 'NED', name: 'Países Bajos', flag: '🇳🇱' },
+  { code: 'EGY', name: 'Egipto', flag: '🇪🇬' },
+  { code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
+  { code: 'ESP', name: 'España', flag: '🇪🇸' },
+  { code: 'NGA', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'JPN', name: 'Japón', flag: '🇯🇵' },
+  { code: 'URU', name: 'Uruguay', flag: '🇺🇾' },
+  { code: 'FRA', name: 'Francia', flag: '🇫🇷' },
+  { code: 'POR', name: 'Portugal', flag: '🇵🇹' },
+  { code: 'COL', name: 'Colombia', flag: '🇨🇴' },
+  { code: 'ENG', name: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { code: 'BEL', name: 'Bélgica', flag: '🇧🇪' },
+  { code: 'SRB', name: 'Serbia', flag: '🇷🇸' },
+  { code: 'CHI', name: 'Chile', flag: '🇨🇱' },
+  { code: 'ALB', name: 'Albania', flag: '🇦🇱' },
+  { code: 'VEN', name: 'Venezuela', flag: '🇻🇪' },
+  { code: 'DEN', name: 'Dinamarca', flag: '🇩🇰' },
+  { code: 'IRN', name: 'Irán', flag: '🇮🇷' },
+  { code: 'NZL', name: 'Nueva Zelanda', flag: '🇳🇿' },
+  { code: 'SEN', name: 'Senegal', flag: '🇸🇳' },
+  { code: 'SLO', name: 'Eslovenia', flag: '🇸🇮' },
+  { code: 'CRC', name: 'Costa Rica', flag: '🇨🇷' },
+  { code: 'PAN', name: 'Panamá', flag: '🇵🇦' },
+  { code: 'BOL', name: 'Bolivia', flag: '🇧🇴' },
+  { code: 'PER', name: 'Perú', flag: '🇵🇪' },
+  { code: 'GHA', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'TUN', name: 'Túnez', flag: '🇹🇳' },
+  { code: 'SAU', name: 'Arabia Saudita', flag: '🇸🇦' },
+];
+
+// Fill in normal sticker lists
+TEAMS.forEach(t => {
+  if (!t.stickers) {
+    t.stickers = Array.from({length: 20}, (_, i) => `${t.code}${i+1}`);
+  }
+});
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'wc2026_figuritas_v2';
+let collected = {};
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) collected = JSON.parse(raw);
+  } catch(e) { collected = {}; }
+}
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collected)); } catch(e) {}
+}
+
+function isCollected(code) { return !!collected[code]; }
+
+function toggle(code) {
+  if (collected[code]) delete collected[code];
+  else collected[code] = 1;
+  saveData();
+  updateProgress();
+  updateTeamUI(getTeamCode(code));
+}
+
+function getTeamCode(stickerCode) {
+  // e.g. "MEX5" → "MEX", "FWC3" → "FWC", "00" → "FWC"
+  if (stickerCode === '00') return 'FWC';
+  const m = stickerCode.match(/^([A-Z]+)/);
+  return m ? m[1] : '';
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+
+function totalCollected() {
+  return Object.keys(collected).length;
+}
+
+function updateProgress() {
+  const n = totalCollected();
+  const total = 969;
+  const pct = (n / total * 100).toFixed(1);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = `${n} / ${total}`;
+}
+
+// ─── FILTERS & SEARCH ────────────────────────────────────────────────────────
+
+let currentFilter = 'all';
+let searchTerm = '';
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMain();
+}
+
+function onSearch() {
+  searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+  renderMain();
+}
+
+function teamMatchesFilter(team) {
+  const stickers = team.stickers;
+  const any = stickers.some(s => isCollected(s));
+  const all = stickers.every(s => isCollected(s));
+
+  if (currentFilter === 'special') return !!team.special;
+  if (currentFilter === 'missing') return !all;
+  if (currentFilter === 'complete') return all;
+  if (currentFilter.length <= 4 && currentFilter !== 'all') return team.code === currentFilter.toUpperCase();
+  return true;
+}
+
+function teamMatchesSearch(team) {
+  if (!searchTerm) return true;
+  if (team.name.toLowerCase().includes(searchTerm)) return true;
+  if (team.code.toLowerCase().includes(searchTerm)) return true;
+  if (team.stickers.some(s => s.toLowerCase().includes(searchTerm))) return true;
+  return false;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function renderMain() {
+  const main = document.getElementById('main');
+  const visible = TEAMS.filter(t => teamMatchesFilter(t) && teamMatchesSearch(t));
+
+  if (visible.length === 0) {
+    main.innerHTML = '<div class="empty">🔍 No hay resultados para tu búsqueda.</div>';
+    return;
+  }
+
+  main.innerHTML = '';
+  visible.forEach(team => {
+    main.appendChild(buildTeamSection(team));
+  });
+}
+
+function buildTeamSection(team) {
+  const stickers = team.stickers;
+  const done = stickers.filter(s => isCollected(s)).length;
+  const total = stickers.length;
+  const isComplete = done === total;
+  const pct = total > 0 ? (done / total * 100) : 0;
+
+  const section = document.createElement('div');
+  section.className = 'team-section' + (isComplete ? ' complete' : '');
+  section.id = 'team-' + team.code;
+
+  // Determine count color
+  let countClass = 'none';
+  if (done === total) countClass = 'done';
+  else if (done > 0) countClass = 'partial';
+
+  section.innerHTML = `
+    <div class="team-header" onclick="toggleTeam('${team.code}')">
+      <span class="team-flag">${team.flag}</span>
+      <div class="team-info">
+        <div class="team-name">${team.name} ${team.special ? '<span class="special-badge">ESPECIAL</span>' : ''}</div>
+        <div class="team-code">${team.code}</div>
+      </div>
+      <div class="team-mini-progress">
+        <div class="team-mini-bar">
+          <div class="team-mini-bar-fill" style="width:${pct}%"></div>
+        </div>
+        <span class="team-count ${countClass}">${done}/${total}</span>
+      </div>
+      <span class="team-chevron">▼</span>
+    </div>
+    <div class="stickers-grid ${team.special ? 'special-grid' : ''}" id="grid-${team.code}">
+      ${stickers.map(s => `
+        <button class="sticker-btn ${isCollected(s) ? 'collected' : ''} ${team.special ? 'special-sticker' : ''}"
+                id="stk-${s}" onclick="handleSticker('${s}','${team.code}')">
+          ${s}
+        </button>
+      `).join('')}
+    </div>
+    <div class="team-actions" id="actions-${team.code}" style="display:none">
+      <button class="quick-btn mark-all" onclick="markAll('${team.code}',true)">✅ Marcar todo</button>
+      <button class="quick-btn unmark-all" onclick="markAll('${team.code}',false)">❌ Desmarcar</button>
+    </div>
+  `;
+
+  return section;
+}
+
+function toggleTeam(code) {
+  const sec = document.getElementById('team-' + code);
+  const actions = document.getElementById('actions-' + code);
+  const wasOpen = sec.classList.contains('open');
+  sec.classList.toggle('open');
+  if (actions) actions.style.display = wasOpen ? 'none' : 'flex';
+}
+
+function handleSticker(stickerCode, teamCode) {
+  toggle(stickerCode);
+  // Update just this button
+  const btn = document.getElementById('stk-' + stickerCode);
+  if (btn) {
+    btn.classList.toggle('collected', isCollected(stickerCode));
+  }
+}
+
+function updateTeamUI(teamCode) {
+  const team = TEAMS.find(t => t.code === teamCode);
+  if (!team) return;
+  const section = document.getElementById('team-' + team.code);
+  if (!section) return;
+
+  const stickers = team.stickers;
+  const done = stickers.filter(s => isCollected(s)).length;
+  const total = stickers.length;
+  const isComplete = done === total;
+  const pct = total > 0 ? (done / total * 100) : 0;
+
+  section.classList.toggle('complete', isComplete);
+
+  // Update count
+  const countEl = section.querySelector('.team-count');
+  if (countEl) {
+    countEl.textContent = `${done}/${total}`;
+    countEl.className = 'team-count ' + (done === total ? 'done' : done > 0 ? 'partial' : 'none');
+  }
+
+  const barFill = section.querySelector('.team-mini-bar-fill');
+  if (barFill) barFill.style.width = pct + '%';
+}
+
+function markAll(code, value) {
+  const team = TEAMS.find(t => t.code === code);
+  if (!team) return;
+  team.stickers.forEach(s => {
+    if (value) collected[s] = 1;
+    else delete collected[s];
+    const btn = document.getElementById('stk-' + s);
+    if (btn) btn.classList.toggle('collected', value);
+  });
+  saveData();
+  updateProgress();
+  updateTeamUI(code);
+
+  const msg = value ? `✅ ${team.name} marcado completo` : `❌ ${team.name} desmarcado`;
+  showToast(msg);
+}
+
+// ─── STATS MODAL ─────────────────────────────────────────────────────────────
+
+function openStats() {
+  const n = totalCollected();
+  const total = 969;
+  const pct = (n / total * 100).toFixed(1);
+
+  const complete = TEAMS.filter(t => t.stickers.every(s => isCollected(s)));
+  const started = TEAMS.filter(t => t.stickers.some(s => isCollected(s)) && !t.stickers.every(s => isCollected(s)));
+  const empty = TEAMS.filter(t => t.stickers.every(s => !isCollected(s)));
+
+  // Special stickers
+  const fwc = TEAMS.find(t => t.code === 'FWC');
+  const specialDone = fwc ? fwc.stickers.filter(s => isCollected(s)).length : 0;
+
+  document.getElementById('statsContent').innerHTML = `
+    <div class="modal-stat"><span>🎯 Total pegadas</span><strong>${n} / ${total}</strong></div>
+    <div class="modal-stat"><span>📈 Progreso</span><strong>${pct}%</strong></div>
+    <div class="modal-stat"><span>⭐ Especiales</span><strong>${specialDone} / 9</strong></div>
+    <div class="modal-stat"><span>✅ Equipos completos</span><strong>${complete.length} / ${TEAMS.length}</strong></div>
+    <div class="modal-stat"><span>🔄 Equipos en progreso</span><strong>${started.length}</strong></div>
+    <div class="modal-stat"><span>⬜ Equipos sin empezar</span><strong>${empty.length}</strong></div>
+    <div class="modal-stat"><span>❌ Faltan</span><strong>${total - n}</strong></div>
+    ${complete.length > 0 ? `
+    <div class="modal-stat" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <span>🏅 Completos:</span>
+      <div style="font-size:0.8rem;color:var(--green);line-height:1.8">
+        ${complete.map(t => `${t.flag} ${t.name}`).join(' · ')}
+      </div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeStats(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+// ─── BACKUP EXPORT / IMPORT ──────────────────────────────────────────────────
+
+function exportBackup() {
+  const payload = {
+    app: 'figuritas-mundial-2026',
+    fecha: new Date().toISOString().slice(0,10),
+    total: Object.keys(collected).length,
+    datos: collected
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'figuritas_2026_' + payload.fecha + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 Backup guardado — ' + payload.total + ' figuritas');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const datos = parsed.datos || parsed;
+      if (typeof datos !== 'object') throw new Error('Formato invalido');
+      collected = datos;
+      saveData();
+      renderMain();
+      updateProgress();
+      showToast('✅ Backup restaurado — ' + Object.keys(collected).length + ' figuritas');
+    } catch(err) {
+      showToast('❌ Archivo invalido, no se pudo restaurar');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+loadData();
+renderMain();
+updateProgress();
+</script>
+</body>
+</html>
