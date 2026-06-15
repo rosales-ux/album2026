@@ -108,6 +108,7 @@ main{padding:8px 8px 80px}
       <button class="hbtn" onclick="exportBackup()" title="Exportar backup">💾</button>
       <label class="hbtn" style="cursor:pointer" title="Importar backup">📂<input type="file" accept=".json" onchange="importBackup(event)" style="display:none"></label>
       <button class="hbtn" onclick="openStats()" title="Estadísticas">📊</button>
+      <button class="hbtn" onclick="openMissing()" title="Lista de faltantes">📋</button>
     </div>
   </div>
   <div class="progress-wrap">
@@ -136,86 +137,74 @@ main{padding:8px 8px 80px}
     <button class="modal-close" onclick="closeModal()">Cerrar</button>
   </div>
 </div>
+
+<!-- Missing stickers modal -->
+<div class="modal-overlay" id="missingOverlay" onclick="closeMissingModal(event)">
+  <div class="modal" id="missingModal">
+    <h2>📋 Figuritas que faltan</h2>
+    <div id="missingCount" style="font-size:.78rem;color:var(--text2);margin-bottom:12px"></div>
+    <div id="missingList" style="font-size:.8rem;line-height:2;color:var(--text)"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="modal-close" style="margin-top:0;background:var(--green);border-color:var(--green);color:#000;font-weight:700" onclick="shareMissing()">📤 Compartir lista</button>
+      <button class="modal-close" style="margin-top:0;flex:0 0 auto;width:80px" onclick="closeMissingModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ── DATA OFICIAL PANINI FIFA WORLD CUP 2026 — orden del álbum por grupos ────
 const TEAMS = [
-  { code:'FWC', name:'Introducción FIFA/FWC', flag:'🏆', special:true,
-    stickers:['00','FWC1','FWC2','FWC3','FWC4','FWC5','FWC6','FWC7','FWC8'] },
-  // Grupo A
-  { code:'MEX', name:'México',          flag:'🇲🇽' },
-  { code:'RSA', name:'Sudáfrica',       flag:'🇿🇦' },
-  { code:'KOR', name:'Corea del Sur',   flag:'🇰🇷' },
-  { code:'CZE', name:'Rep. Checa',      flag:'🇨🇿' },
-  // Grupo B
-  { code:'CAN', name:'Canadá',          flag:'🇨🇦' },
-  { code:'BIH', name:'Bosnia-Herz.',    flag:'🇧🇦' },
-  { code:'QAT', name:'Qatar',           flag:'🇶🇦' },
-  { code:'SUI', name:'Suiza',           flag:'🇨🇭' },
-  // Grupo C
-  { code:'BRA', name:'Brasil',          flag:'🇧🇷' },
-  { code:'MAR', name:'Marruecos',       flag:'🇲🇦' },
-  { code:'HAI', name:'Haití',           flag:'🇭🇹' },
-  { code:'SCO', name:'Escocia',         flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
-  // Grupo D
-  { code:'USA', name:'Estados Unidos',  flag:'🇺🇸' },
-  { code:'PAR', name:'Paraguay',        flag:'🇵🇾' },
-  { code:'AUS', name:'Australia',       flag:'🇦🇺' },
-  { code:'TUR', name:'Turquía',         flag:'🇹🇷' },
-  // Grupo E
-  { code:'GER', name:'Alemania',        flag:'🇩🇪' },
-  { code:'CUW', name:'Curazao',         flag:'🇨🇼' },
-  { code:'CIV', name:'C. de Marfil',    flag:'🇨🇮' },
-  { code:'ECU', name:'Ecuador',         flag:'🇪🇨' },
-  // Grupo F
-  { code:'NED', name:'Países Bajos',    flag:'🇳🇱' },
-  { code:'JPN', name:'Japón',           flag:'🇯🇵' },
-  { code:'SWE', name:'Suecia',          flag:'🇸🇪' },
-  { code:'TUN', name:'Túnez',           flag:'🇹🇳' },
-  // Grupo G
-  { code:'BEL', name:'Bélgica',         flag:'🇧🇪' },
-  { code:'EGY', name:'Egipto',          flag:'🇪🇬' },
-  { code:'IRN', name:'Irán',            flag:'🇮🇷' },
-  { code:'NZL', name:'Nueva Zelanda',   flag:'🇳🇿' },
-  // Grupo H
-  { code:'ARG', name:'Argentina',       flag:'🇦🇷' },
-  { code:'ALG', name:'Argelia',         flag:'🇩🇿' },
-  { code:'NGA', name:'Nigeria',         flag:'🇳🇬' },
-  { code:'NOR', name:'Noruega',         flag:'🇳🇴' },
-  // Grupo I
-  { code:'ESP', name:'España',          flag:'🇪🇸' },
-  { code:'CPV', name:'Cabo Verde',      flag:'🇨🇻' },
-  { code:'SEN', name:'Senegal',         flag:'🇸🇳' },
-  { code:'SRB', name:'Serbia',          flag:'🇷🇸' },
-  // Grupo J
-  { code:'FRA', name:'Francia',         flag:'🇫🇷' },
-  { code:'COD', name:'Congo DR',        flag:'🇨🇩' },
-  { code:'DEN', name:'Dinamarca',       flag:'🇩🇰' },
-  { code:'SLO', name:'Eslovenia',       flag:'🇸🇮' },
-  // Grupo K
-  { code:'POR', name:'Portugal',        flag:'🇵🇹' },
-  { code:'JOR', name:'Jordania',        flag:'🇯🇴' },
-  { code:'IRQ', name:'Irak',            flag:'🇮🇶' },
-  { code:'URU', name:'Uruguay',         flag:'🇺🇾' },
-  // Grupo L
-  { code:'COL', name:'Colombia',        flag:'🇨🇴' },
-  { code:'UZB', name:'Uzbekistán',      flag:'🇺🇿' },
-  { code:'GHA', name:'Ghana',           flag:'🇬🇭' },
-  { code:'AUT', name:'Austria',         flag:'🇦🇹' },
-  // Grupo M (hosts completar)
-  { code:'ENG', name:'Inglaterra',      flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  { code:'SAU', name:'Arabia Saudita',  flag:'🇸🇦' },
-  { code:'PAN', name:'Panamá',          flag:'🇵🇦' },
-  { code:'BOL', name:'Bolivia',         flag:'🇧🇴' },
-  // Grupo N
-  { code:'CHI', name:'Chile',           flag:'🇨🇱' },
-  { code:'PER', name:'Perú',            flag:'🇵🇪' },
-  { code:'CRC', name:'Costa Rica',      flag:'🇨🇷' },
-  { code:'ALB', name:'Albania',         flag:'🇦🇱' },
-  // FIFA Museum
-  { code:'MUS', name:'Museo FIFA', flag:'🏛️', special:true,
-    stickers:['MUS1','MUS2','MUS3','MUS4','MUS5','MUS6','MUS7','MUS8','MUS9','MUS10','MUS11'] },
+  { code:'FWC', name:'Introducción FIFA/FWC', flag:'🏆', special:true, stickers:['00','FWC1','FWC2','FWC3','FWC4','FWC5','FWC6','FWC7','FWC8'] },
+  { code:'MEX', name:'México', flag:'🇲🇽' },
+  { code:'RSA', name:'Sudáfrica', flag:'🇿🇦' },
+  { code:'KOR', name:'Corea del Sur', flag:'🇰🇷' },
+  { code:'CZE', name:'Rep. Checa', flag:'🇨🇿' },
+  { code:'CAN', name:'Canadá', flag:'🇨🇦' },
+  { code:'BIH', name:'Bosnia-Herz.', flag:'🇧🇦' },
+  { code:'QAT', name:'Qatar', flag:'🇶🇦' },
+  { code:'SUI', name:'Suiza', flag:'🇨🇭' },
+  { code:'BRA', name:'Brasil', flag:'🇧🇷' },
+  { code:'MAR', name:'Marruecos', flag:'🇲🇦' },
+  { code:'HAI', name:'Haití', flag:'🇭🇹' },
+  { code:'SCO', name:'Escocia', flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+  { code:'USA', name:'Estados Unidos', flag:'🇺🇸' },
+  { code:'PAR', name:'Paraguay', flag:'🇵🇾' },
+  { code:'AUS', name:'Australia', flag:'🇦🇺' },
+  { code:'TUR', name:'Turquía', flag:'🇹🇷' },
+  { code:'GER', name:'Alemania', flag:'🇩🇪' },
+  { code:'CUW', name:'Curazao', flag:'🇨🇼' },
+  { code:'CIV', name:'C. de Marfil', flag:'🇨🇮' },
+  { code:'ECU', name:'Ecuador', flag:'🇪🇨' },
+  { code:'NED', name:'Países Bajos', flag:'🇳🇱' },
+  { code:'JPN', name:'Japón', flag:'🇯🇵' },
+  { code:'SWE', name:'Suecia', flag:'🇸🇪' },
+  { code:'TUN', name:'Túnez', flag:'🇹🇳' },
+  { code:'BEL', name:'Bélgica', flag:'🇧🇪' },
+  { code:'EGY', name:'Egipto', flag:'🇪🇬' },
+  { code:'IRN', name:'Irán', flag:'🇮🇷' },
+  { code:'NZL', name:'Nueva Zelanda', flag:'🇳🇿' },
+  { code:'ARG', name:'Argentina', flag:'🇦🇷' },
+  { code:'DZA', name:'Argelia', flag:'🇩🇿' },
+  { code:'NOR', name:'Noruega', flag:'🇳🇴' },
+  { code:'GHA', name:'Ghana', flag:'🇬🇭' },
+  { code:'ESP', name:'España', flag:'🇪🇸' },
+  { code:'CPV', name:'Cabo Verde', flag:'🇨🇻' },
+  { code:'SEN', name:'Senegal', flag:'🇸🇳' },
+  { code:'AUT', name:'Austria', flag:'🇦🇹' },
+  { code:'FRA', name:'Francia', flag:'🇫🇷' },
+  { code:'COD', name:'Congo DR', flag:'🇨🇩' },
+  { code:'UZB', name:'Uzbekistán', flag:'🇺🇿' },
+  { code:'CRO', name:'Croacia', flag:'🇭🇷' },
+  { code:'POR', name:'Portugal', flag:'🇵🇹' },
+  { code:'JOR', name:'Jordania', flag:'🇯🇴' },
+  { code:'IRQ', name:'Irak', flag:'🇮🇶' },
+  { code:'COL', name:'Colombia', flag:'🇨🇴' },
+  { code:'ENG', name:'Inglaterra', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { code:'SAU', name:'Arabia Saudita', flag:'🇸🇦' },
+  { code:'PAN', name:'Panamá', flag:'🇵🇦' },
+  { code:'URU', name:'Uruguay', flag:'🇺🇾' },
+  { code:'MUS', name:'Museo FIFA', flag:'🏛️', special:true, stickers:['MUS1','MUS2','MUS3','MUS4','MUS5','MUS6','MUS7','MUS8','MUS9','MUS10','MUS11'] }
 ];
 
 const TOTAL = 980;
@@ -378,6 +367,96 @@ function importBackup(event){
 // ── TOAST ────────────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+
+
+// ── MISSING LIST ─────────────────────────────────────────────────────────────
+function openMissing(){
+  const missing = [];
+  TEAMS.forEach(team => {
+    team.stickers.forEach(s => {
+      if (!isCollected(s)) missing.push(s);
+    });
+  });
+  const total = TOTAL - Object.keys(collected).length;
+  document.getElementById('missingCount').textContent = `Faltan ${total} de ${TOTAL} figuritas`;
+  
+  if (missing.length === 0) {
+    document.getElementById('missingList').innerHTML = '<span style="color:var(--green)">🎉 ¡Álbum completo!</span>';
+  } else {
+    // Group by team code
+    const groups = {};
+    TEAMS.forEach(t => { groups[t.code] = { name: t.name, flag: t.flag, items: [] }; });
+    missing.forEach(s => {
+      const code = s === '00' ? 'FWC' : s.match(/^([A-Z]+)/)?.[1];
+      if (code && groups[code]) groups[code].items.push(s);
+    });
+    let html = '';
+    TEAMS.forEach(t => {
+      const g = groups[t.code];
+      if (g && g.items.length > 0) {
+        html += `<div style="margin-bottom:10px">`;
+        html += `<div style="font-size:.72rem;font-weight:700;color:var(--accent2);margin-bottom:4px">${t.flag} ${t.name}</div>`;
+        html += `<div style="display:flex;flex-wrap:wrap;gap:4px">`;
+        g.items.forEach(s => {
+          const isSpecial = t.special;
+          html += `<span style="background:${isSpecial ? 'var(--special)' : 'var(--surface2)'};border:1px solid ${isSpecial ? 'var(--special2)' : 'var(--border)'};padding:2px 6px;border-radius:4px;font-size:.7rem;font-weight:600">${s}</span>`;
+        });
+        html += `</div></div>`;
+      }
+    });
+    document.getElementById('missingList').innerHTML = html;
+  }
+  document.getElementById('missingOverlay').classList.add('open');
+}
+function closeMissingModal(e){
+  if (!e || e.target === document.getElementById('missingOverlay'))
+    document.getElementById('missingOverlay').classList.remove('open');
+}
+
+
+// ── SHARE MISSING ────────────────────────────────────────────────────────────
+function shareMissing(){
+  const missing = [];
+  TEAMS.forEach(team => {
+    team.stickers.forEach(s => { if (!isCollected(s)) missing.push(s); });
+  });
+
+  // Build text grouped by team
+  let lines = [];
+  lines.push('⚽ FIGURITAS QUE FALTAN — Mundial 2026 Panini');
+  lines.push(`📅 ${new Date().toLocaleDateString('es')}  |  Faltan ${missing.length} de ${TOTAL}`);
+  lines.push('');
+
+  TEAMS.forEach(t => {
+    const items = t.stickers.filter(s => !isCollected(s));
+    if (items.length > 0) {
+      lines.push(`${t.flag} ${t.name} (${items.length}/${t.stickers.length})`);
+      lines.push(items.join('  '));
+      lines.push('');
+    }
+  });
+
+  const text = lines.join('\n');
+
+  // Try native share (iOS), fallback to copy
+  if (navigator.share) {
+    navigator.share({ title: 'Figuritas que faltan — Mundial 2026', text }).catch(() => copyToClipboard(text));
+  } else {
+    copyToClipboard(text);
+  }
+}
+
+function copyToClipboard(text){
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Lista copiada al portapapeles'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('📋 Lista copiada al portapapeles'); } catch(e) { showToast('❌ No se pudo copiar'); }
+    document.body.removeChild(ta);
+  }
+}
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 loadData(); renderMain(); updateProgress();
